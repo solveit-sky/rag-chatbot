@@ -1,12 +1,3 @@
-"""
-PDF Q&A Chatbot — Streamlit App
-================================
-A deployable version of the RAG chatbot. Users upload a PDF,
-ask questions, and get answers grounded in that document.
-
-Run locally with:  streamlit run app.py
-"""
-
 import os
 import streamlit as st
 from pypdf import PdfReader
@@ -14,26 +5,22 @@ from sentence_transformers import SentenceTransformer
 import chromadb
 from google import genai
 
-
-# -----------------------------------------------------------------------
 # PAGE SETUP — this controls the browser tab and overall layout
-# -----------------------------------------------------------------------
+
 st.set_page_config(page_title="PDF Q&A", page_icon="📄")
 
 st.title("Ask your PDF")
 st.write("Upload a document, then ask questions about what's inside it.")
 
-
-# -----------------------------------------------------------------------
 # API KEY — read from host secrets, fall back to a user-entered key
-# -----------------------------------------------------------------------
+
 api_key = os.environ.get("GEMINI_API_KEY")
 if not api_key:
     try:
         api_key = st.secrets.get("GEMINI_API_KEY", None)
     except Exception:
-        # No secrets.toml file exists (normal when running locally) —
-        # that's fine, we just fall through to asking the user for a key.
+        #  file exists (normal when running locally) —
+        
         api_key = None
 
 if not api_key:
@@ -48,8 +35,6 @@ if not api_key:
     st.stop()
 
 
-# -----------------------------------------------------------------------
-# LOAD THE EMBEDDING MODEL ONCE, NOT ON EVERY INTERACTION
 # @st.cache_resource tells Streamlit: run this once, reuse the result
 # -----------------------------------------------------------------------
 @st.cache_resource
@@ -60,9 +45,8 @@ def load_embed_model():
 embed_model = load_embed_model()
 
 
-# -----------------------------------------------------------------------
 # THE SAME PIPELINE FUNCTIONS AS YOUR NOTEBOOK
-# -----------------------------------------------------------------------
+
 def load_pdf_text(uploaded_file):
     """Extract all text from an uploaded PDF."""
     reader = PdfReader(uploaded_file)
@@ -127,9 +111,8 @@ QUESTION:
     return response.text
 
 
-# -----------------------------------------------------------------------
 # THE APP FLOW — upload, process, ask
-# -----------------------------------------------------------------------
+
 uploaded_file = st.file_uploader("Choose a PDF", type="pdf")
 
 if uploaded_file:
